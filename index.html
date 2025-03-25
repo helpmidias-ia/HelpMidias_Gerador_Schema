@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dinastia - Gerar Schema</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>HELP MIDIAS</h1>
+        <p class="subtitle">Para gerar as keys, use este link: <a href="https://acte.ltd/utils/randomkeygen" target="_blank">https://acte.ltd/utils/randomkeygen</a></p>
+        <form id="schemaForm">
+            <label for="defaultDomain">Default Domain</label>
+            <input type="text" id="defaultDomain" name="defaultDomain" placeholder="helpmidias-evolution.ew3kso.easypanel.host">
+
+            <label for="apiEvolution">API Evolution</label>
+            <input type="text" id="apiEvolution" name="apiEvolution" placeholder="A3D1CF99FD393CFBD7AEE966BB78E">
+
+            <label for="n8nEncryptionKey">N8N Encryption Key</label>
+            <input type="text" id="n8nEncryptionKey" name="n8nEncryptionKey" placeholder="6A8E9166AC3C1C7996667465C8549">
+
+            <label for="redisKey">Redis Key</label>
+            <input type="text" id="redisKey" name="redisKey" placeholder="2647417615DF52CA273515CEB689F">
+
+            <label for="postgresKey">Postgress Key</label>
+            <input type="text" id="postgresKey" name="postgresKey" placeholder="6C465235796521F9F95353677B473">
+
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" placeholder="seuemail@exemplo.com">
+
+            <p class="info">Ao clicar gerar, você autoriza o encaminhamento de mensagens promocionais ao seu email sobre a comunidade Dinastia</p>
+
+            <button type="submit">GERAR</button>
+        </form>
+
+        <div class="output">
+            <h2>Schema Gerado:</h2>
+            <pre id="schemaOutput"></pre>
+            <button id="copyButton" style="display: none;">Copiar Schema</button>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
