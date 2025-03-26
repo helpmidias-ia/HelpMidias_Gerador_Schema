@@ -2,21 +2,19 @@ document.getElementById('schemaForm').addEventListener('submit', function(event)
     event.preventDefault();
 
     // Capturar os valores dos campos
-    const defaultDomain = document.getElementById('defaultDomain').value || 'helpmidias-evolution.2ecw2a.easypanel.host';
+    const projectName = document.getElementById('projectName').value || 'helpmidias';
+    const defaultSubdomain = document.getElementById('defaultDomain').value || '2ecw2a.easypanel.host';
     const apiEvolution = document.getElementById('apiEvolution').value || 'A3D1CF99FD393CFBD7AEE966BB78E';
     const n8nEncryptionKey = document.getElementById('n8nEncryptionKey').value || '6A8E9166AC3C1C7996667465C8549';
     const redisKey = document.getElementById('redisKey').value || '2647417615DF52CA273515CEB689F';
     const postgresKey = document.getElementById('postgresKey').value || '6C465235796521F9F95353677B473';
     const email = document.getElementById('email').value || 'seuemail@exemplo.com';
 
-    // Extrair o subdomínio do defaultDomain (ex.: "2ecw2a.easypanel.host")
-    const domainParts = defaultDomain.split('.');
-    const subdomain = domainParts.slice(1).join('.'); // Pega tudo após o primeiro ponto (ex.: "2ecw2a.easypanel.host")
-
-    // Construir os domínios do n8n com base no subdomínio
-    const n8nEditorDomain = `helpmidias-n8n-editor.${subdomain}`;
-    const n8nWebhookDomain = `helpmidias-n8n-webhook.${subdomain}`;
-    const n8nWorkerDomain = `helpmidias-n8n-worker.${subdomain}`;
+    // Construir os domínios completos usando o projectName e o subdomínio
+    const evolutionDomain = `${projectName}-evolution.${defaultSubdomain}`;
+    const n8nEditorDomain = `${projectName}-n8n-editor.${defaultSubdomain}`;
+    const n8nWebhookDomain = `${projectName}-n8n-webhook.${defaultSubdomain}`;
+    const n8nWorkerDomain = `${projectName}-n8n-worker.${defaultSubdomain}`;
 
     // Construir o schema JSON
     const schema = {
@@ -24,14 +22,14 @@ document.getElementById('schemaForm').addEventListener('submit', function(event)
             {
                 type: "app",
                 data: {
-                    projectName: "helpmidias",
+                    projectName: projectName,
                     serviceName: "evolution",
                     source: {
                         type: "image",
                         image: "atendai/evolution-api:latest"
                     },
                     env: [
-                        `SERVER_URL=https://${defaultDomain}`,
+                        `SERVER_URL=https://$(PRIMARY_DOMAIN)`,
                         "DEL_INSTANCE=false",
                         "DEL_TEMP_INSTANCES=false",
                         "PROVIDER_ENABLED=false",
@@ -40,7 +38,7 @@ document.getElementById('schemaForm').addEventListener('submit', function(event)
                         "PROVIDER_PREFIX=evolution-app",
                         "DATABASE_ENABLED=true",
                         "DATABASE_PROVIDER=postgresql",
-                        `DATABASE_CONNECTION_URI=postgres://postgres:${postgresKey}@helpmidias_postgres:5432/evolution-app`,
+                        `DATABASE_CONNECTION_URI=postgres://postgres:${postgresKey}@${projectName}_postgres:5432/evolution-app`,
                         "DATABASE_CONNECTION_CLIENT_NAME=evolution-app",
                         "CONFIG_SESSION_PHONE_VERSION=2.3000.1020992134",
                         "SQS_ENABLED=false",
@@ -97,7 +95,7 @@ document.getElementById('schemaForm').addEventListener('submit', function(event)
                         "CHATWOOT_IMPORT_DATABASE_CONNECTION_URI=postgresql://[USUARIO]:[SENHA]@[HOST]:5432/[CHATWOPOT_DATABASE]?sslmode=disable",
                         "CHATWOOT_IMPORT_PLACEHOLDER_MEDIA_MESSAGE=true",
                         "CACHE_REDIS_ENABLED=true",
-                        `CACHE_REDIS_URI=redis://default:${redisKey}@helpmidias_redis:6379/5`,
+                        `CACHE_REDIS_URI=redis://default:${redisKey}@${projectName}_redis:6379/5`,
                         "CACHE_REDIS_PREFIX_KEY=evolution-app",
                         "CACHE_REDIS_SAVE_INSTANCES=false",
                         "CACHE_LOCAL_ENABLED=false",
@@ -119,7 +117,7 @@ document.getElementById('schemaForm').addEventListener('submit', function(event)
                     },
                     domains: [
                         {
-                            host: defaultDomain,
+                            host: evolutionDomain,
                             https: true,
                             port: 8080,
                             path: "/",
@@ -132,7 +130,7 @@ document.getElementById('schemaForm').addEventListener('submit', function(event)
             {
                 type: "app",
                 data: {
-                    projectName: "helpmidias",
+                    projectName: projectName,
                     serviceName: "n8n_editor",
                     source: {
                         type: "image",
@@ -141,24 +139,31 @@ document.getElementById('schemaForm').addEventListener('submit', function(event)
                     env: [
                         "DB_TYPE=postgresdb",
                         "DB_POSTGRESDB_PORT=5432",
-                        "DB_POSTGRESDB_HOST=helpmidias_postgres",
+                        `DB_POSTGRESDB_HOST=${projectName}_postgres`,
                         "DB_POSTGRESDB_DATABASE=n8n",
                         "DB_POSTGRESDB_USER=postgres",
                         `DB_POSTGRESDB_PASSWORD=${postgresKey}`,
+                        "# criar chave https://acte.ltd/utils/randomkeygen",
                         `N8N_ENCRYPTION_KEY=${n8nEncryptionKey}`,
+                        "# hosts e URL",
                         `N8N_HOST=https://${n8nEditorDomain}`,
                         `N8N_EDITOR_BASE_URL=https://${n8nEditorDomain}`,
                         "N8N_PROTOCOL=https",
                         "NODE_ENV=production",
+                        "# webhooks",
                         `WEBHOOK_URL=https://${n8nWebhookDomain}`,
+                        "# modo de execuçao para fila",
                         "EXECUTIONS_MODE=queue",
-                        "QUEUE_BULL_REDIS_HOST=helpmidias_redis",
+                        "# redis",
+                        `QUEUE_BULL_REDIS_HOST=${projectName}_redis`,
                         `QUEUE_BULL_REDIS_PASSWORD=${redisKey}`,
                         "QUEUE_BULL_REDIS_PORT=6379",
                         "QUEUE_BULL_REDIS_DB=2",
+                        "# bibliotecas utilizadas",
                         "NODE_FUNCTION_ALLOW_EXTERNAL=*",
                         "EXECUTIONS_DATA_PRUNE='true'",
                         "EXECUTIONS_DATA_MAX_AGE=336",
+                        "#timezone",
                         "GENERIC_TIMEZONE=America/Sao_Paulo",
                         "N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS=true",
                         "N8N_RUNNERS_ENABLED=true",
@@ -186,7 +191,7 @@ document.getElementById('schemaForm').addEventListener('submit', function(event)
             {
                 type: "app",
                 data: {
-                    projectName: "helpmidias",
+                    projectName: projectName,
                     serviceName: "n8n_webhook",
                     source: {
                         type: "image",
@@ -195,24 +200,31 @@ document.getElementById('schemaForm').addEventListener('submit', function(event)
                     env: [
                         "DB_TYPE=postgresdb",
                         "DB_POSTGRESDB_PORT=5432",
-                        "DB_POSTGRESDB_HOST=helpmidias_postgres",
+                        `DB_POSTGRESDB_HOST=${projectName}_postgres`,
                         "DB_POSTGRESDB_DATABASE=n8n",
                         "DB_POSTGRESDB_USER=postgres",
                         `DB_POSTGRESDB_PASSWORD=${postgresKey}`,
+                        "# criar chave https://acte.ltd/utils/randomkeygen",
                         `N8N_ENCRYPTION_KEY=${n8nEncryptionKey}`,
+                        "# hosts e URL",
                         `N8N_HOST=https://${n8nEditorDomain}`,
                         `N8N_EDITOR_BASE_URL=https://${n8nEditorDomain}`,
                         "N8N_PROTOCOL=https",
                         "NODE_ENV=production",
+                        "# webhooks",
                         `WEBHOOK_URL=https://${n8nWebhookDomain}`,
+                        "# modo de execuçao para fila",
                         "EXECUTIONS_MODE=queue",
-                        "QUEUE_BULL_REDIS_HOST=helpmidias_redis",
+                        "# redis",
+                        `QUEUE_BULL_REDIS_HOST=${projectName}_redis`,
                         `QUEUE_BULL_REDIS_PASSWORD=${redisKey}`,
                         "QUEUE_BULL_REDIS_PORT=6379",
                         "QUEUE_BULL_REDIS_DB=2",
+                        "# bibliotecas utilizadas",
                         "NODE_FUNCTION_ALLOW_EXTERNAL=*",
                         "EXECUTIONS_DATA_PRUNE='true'",
                         "EXECUTIONS_DATA_MAX_AGE=336",
+                        "#timezone",
                         "GENERIC_TIMEZONE=America/Sao_Paulo",
                         "N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS=true",
                         "N8N_RUNNERS_ENABLED=true",
@@ -240,7 +252,7 @@ document.getElementById('schemaForm').addEventListener('submit', function(event)
             {
                 type: "app",
                 data: {
-                    projectName: "helpmidias",
+                    projectName: projectName,
                     serviceName: "n8n_worker",
                     source: {
                         type: "image",
@@ -249,24 +261,31 @@ document.getElementById('schemaForm').addEventListener('submit', function(event)
                     env: [
                         "DB_TYPE=postgresdb",
                         "DB_POSTGRESDB_PORT=5432",
-                        "DB_POSTGRESDB_HOST=helpmidias_postgres",
+                        `DB_POSTGRESDB_HOST=${projectName}_postgres`,
                         "DB_POSTGRESDB_DATABASE=n8n",
                         "DB_POSTGRESDB_USER=postgres",
                         `DB_POSTGRESDB_PASSWORD=${postgresKey}`,
+                        "# criar chave https://acte.ltd/utils/randomkeygen",
                         `N8N_ENCRYPTION_KEY=${n8nEncryptionKey}`,
+                        "# hosts e URL",
                         `N8N_HOST=https://${n8nEditorDomain}`,
                         `N8N_EDITOR_BASE_URL=https://${n8nEditorDomain}`,
                         "N8N_PROTOCOL=https",
                         "NODE_ENV=production",
+                        "# webhooks",
                         `WEBHOOK_URL=https://${n8nWebhookDomain}`,
+                        "# modo de execuçao para fila",
                         "EXECUTIONS_MODE=queue",
-                        "QUEUE_BULL_REDIS_HOST=helpmidias_redis",
+                        "# redis",
+                        `QUEUE_BULL_REDIS_HOST=${projectName}_redis`,
                         `QUEUE_BULL_REDIS_PASSWORD=${redisKey}`,
                         "QUEUE_BULL_REDIS_PORT=6379",
                         "QUEUE_BULL_REDIS_DB=2",
+                        "# bibliotecas utilizadas",
                         "NODE_FUNCTION_ALLOW_EXTERNAL=*",
                         "EXECUTIONS_DATA_PRUNE='true'",
                         "EXECUTIONS_DATA_MAX_AGE=336",
+                        "#timezone",
                         "GENERIC_TIMEZONE=America/Sao_Paulo",
                         "N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS=true",
                         "N8N_RUNNERS_ENABLED=true",
@@ -294,7 +313,7 @@ document.getElementById('schemaForm').addEventListener('submit', function(event)
             {
                 type: "postgres",
                 data: {
-                    projectName: "helpmidias",
+                    projectName: projectName,
                     serviceName: "postgres",
                     image: "pgvector/pgvector:pg17",
                     password: postgresKey
@@ -303,7 +322,7 @@ document.getElementById('schemaForm').addEventListener('submit', function(event)
             {
                 type: "redis",
                 data: {
-                    projectName: "helpmidias",
+                    projectName: projectName,
                     serviceName: "redis",
                     image: "redis:7",
                     password: redisKey
