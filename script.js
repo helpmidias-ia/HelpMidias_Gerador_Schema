@@ -2,12 +2,21 @@ document.getElementById('schemaForm').addEventListener('submit', function(event)
     event.preventDefault();
 
     // Capturar os valores dos campos
-    const defaultDomain = document.getElementById('defaultDomain').value || 'helpmidias-evolution.ew3kso.easypanel.host';
+    const defaultDomain = document.getElementById('defaultDomain').value || 'helpmidias-evolution.2ecw2a.easypanel.host';
     const apiEvolution = document.getElementById('apiEvolution').value || 'A3D1CF99FD393CFBD7AEE966BB78E';
     const n8nEncryptionKey = document.getElementById('n8nEncryptionKey').value || '6A8E9166AC3C1C7996667465C8549';
     const redisKey = document.getElementById('redisKey').value || '2647417615DF52CA273515CEB689F';
     const postgresKey = document.getElementById('postgresKey').value || '6C465235796521F9F95353677B473';
     const email = document.getElementById('email').value || 'seuemail@exemplo.com';
+
+    // Extrair o subdomínio do defaultDomain (ex.: "2ecw2a.easypanel.host")
+    const domainParts = defaultDomain.split('.');
+    const subdomain = domainParts.slice(1).join('.'); // Pega tudo após o primeiro ponto (ex.: "2ecw2a.easypanel.host")
+
+    // Construir os domínios do n8n com base no subdomínio
+    const n8nEditorDomain = `helpmidias-n8n-editor.${subdomain}`;
+    const n8nWebhookDomain = `helpmidias-n8n-webhook.${subdomain}`;
+    const n8nWorkerDomain = `helpmidias-n8n-worker.${subdomain}`;
 
     // Construir o schema JSON
     const schema = {
@@ -137,11 +146,11 @@ document.getElementById('schemaForm').addEventListener('submit', function(event)
                         "DB_POSTGRESDB_USER=postgres",
                         `DB_POSTGRESDB_PASSWORD=${postgresKey}`,
                         `N8N_ENCRYPTION_KEY=${n8nEncryptionKey}`,
-                        "N8N_HOST=https://helpmidias-n8n-editor.ew3kso.easypanel.host",
-                        "N8N_EDITOR_BASE_URL=https://helpmidias-n8n-editor.ew3kso.easypanel.host",
+                        `N8N_HOST=https://${n8nEditorDomain}`,
+                        `N8N_EDITOR_BASE_URL=https://${n8nEditorDomain}`,
                         "N8N_PROTOCOL=https",
                         "NODE_ENV=production",
-                        "WEBHOOK_URL=https://helpmidias-n8n-webhook.ew3kso.easypanel.host",
+                        `WEBHOOK_URL=https://${n8nWebhookDomain}`,
                         "EXECUTIONS_MODE=queue",
                         "QUEUE_BULL_REDIS_HOST=helpmidias_redis",
                         `QUEUE_BULL_REDIS_PASSWORD=${redisKey}`,
@@ -164,7 +173,7 @@ document.getElementById('schemaForm').addEventListener('submit', function(event)
                     },
                     domains: [
                         {
-                            host: "helpmidias-n8n-editor.ew3kso.easypanel.host",
+                            host: n8nEditorDomain,
                             https: true,
                             port: 5678,
                             path: "/",
@@ -191,11 +200,11 @@ document.getElementById('schemaForm').addEventListener('submit', function(event)
                         "DB_POSTGRESDB_USER=postgres",
                         `DB_POSTGRESDB_PASSWORD=${postgresKey}`,
                         `N8N_ENCRYPTION_KEY=${n8nEncryptionKey}`,
-                        "N8N_HOST=https://helpmidias-n8n-editor.ew3kso.easypanel.host",
-                        "N8N_EDITOR_BASE_URL=https://helpmidias-n8n-editor.ew3kso.easypanel.host",
+                        `N8N_HOST=https://${n8nEditorDomain}`,
+                        `N8N_EDITOR_BASE_URL=https://${n8nEditorDomain}`,
                         "N8N_PROTOCOL=https",
                         "NODE_ENV=production",
-                        "WEBHOOK_URL=https://helpmidias-n8n-webhook.ew3kso.easypanel.host",
+                        `WEBHOOK_URL=https://${n8nWebhookDomain}`,
                         "EXECUTIONS_MODE=queue",
                         "QUEUE_BULL_REDIS_HOST=helpmidias_redis",
                         `QUEUE_BULL_REDIS_PASSWORD=${redisKey}`,
@@ -218,7 +227,7 @@ document.getElementById('schemaForm').addEventListener('submit', function(event)
                     },
                     domains: [
                         {
-                            host: "helpmidias-n8n-webhook.ew3kso.easypanel.host",
+                            host: n8nWebhookDomain,
                             https: true,
                             port: 5678,
                             path: "/",
@@ -245,11 +254,11 @@ document.getElementById('schemaForm').addEventListener('submit', function(event)
                         "DB_POSTGRESDB_USER=postgres",
                         `DB_POSTGRESDB_PASSWORD=${postgresKey}`,
                         `N8N_ENCRYPTION_KEY=${n8nEncryptionKey}`,
-                        "N8N_HOST=https://helpmidias-n8n-editor.ew3kso.easypanel.host",
-                        "N8N_EDITOR_BASE_URL=https://helpmidias-n8n-editor.ew3kso.easypanel.host",
+                        `N8N_HOST=https://${n8nEditorDomain}`,
+                        `N8N_EDITOR_BASE_URL=https://${n8nEditorDomain}`,
                         "N8N_PROTOCOL=https",
                         "NODE_ENV=production",
-                        "WEBHOOK_URL=https://helpmidias-n8n-webhook.ew3kso.easypanel.host",
+                        `WEBHOOK_URL=https://${n8nWebhookDomain}`,
                         "EXECUTIONS_MODE=queue",
                         "QUEUE_BULL_REDIS_HOST=helpmidias_redis",
                         `QUEUE_BULL_REDIS_PASSWORD=${redisKey}`,
@@ -272,7 +281,7 @@ document.getElementById('schemaForm').addEventListener('submit', function(event)
                     },
                     domains: [
                         {
-                            host: "helpmidias-n8n-worker.ew3kso.easypanel.host",
+                            host: n8nWorkerDomain,
                             https: true,
                             port: 80,
                             path: "/",
