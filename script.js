@@ -10,11 +10,21 @@ document.getElementById('schemaForm').addEventListener('submit', function(event)
     const postgresKey = document.getElementById('postgresKey').value || '6C465235796521F9F95353677B473';
     const email = document.getElementById('email').value || 'seuemail@exemplo.com';
 
+    // Log para depuração
+    console.log('Project Name:', projectName);
+    console.log('Default Subdomain:', defaultSubdomain);
+
     // Construir os domínios completos usando o projectName e o subdomínio
     const evolutionDomain = `${projectName}-evolution.${defaultSubdomain}`;
     const n8nEditorDomain = `${projectName}-n8n-editor.${defaultSubdomain}`;
     const n8nWebhookDomain = `${projectName}-n8n-webhook.${defaultSubdomain}`;
     const n8nWorkerDomain = `${projectName}-n8n-worker.${defaultSubdomain}`;
+
+    // Log para depuração dos domínios
+    console.log('Evolution Domain:', evolutionDomain);
+    console.log('N8N Editor Domain:', n8nEditorDomain);
+    console.log('N8N Webhook Domain:', n8nWebhookDomain);
+    console.log('N8N Worker Domain:', n8nWorkerDomain);
 
     // Construir o schema JSON
     const schema = {
