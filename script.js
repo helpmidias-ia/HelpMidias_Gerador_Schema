@@ -199,7 +199,7 @@ document.getElementById('schemaForm').addEventListener('submit', function(event)
                         "N8N_RUNNERS_MODE=internal",
                         "OFFLOAD_MANUAL_EXECUTIONS_TO_WORKERS=true",
                         "N8N_NODE_PATH=/home/node/.n8n/nodes",
-                        "N8N_COMMUNITY_PACKAGES_ALLOW_TOOL_USAGE=true" // Adicionado aqui
+                        "N8N_COMMUNITY_PACKAGES_ALLOW_TOOL_USAGE=true"
                     ].join("\r\n"),
                     "deploy": {
                         "replicas": 1,
@@ -255,7 +255,7 @@ document.getElementById('schemaForm').addEventListener('submit', function(event)
                         "N8N_RUNNERS_MODE=internal",
                         "OFFLOAD_MANUAL_EXECUTIONS_TO_WORKERS=true",
                         "N8N_NODE_PATH=/home/node/.n8n/nodes",
-                        "N8N_COMMUNITY_PACKAGES_ALLOW_TOOL_USAGE=true" // Adicionado aqui
+                        "N8N_COMMUNITY_PACKAGES_ALLOW_TOOL_USAGE=true"
                     ].join("\r\n"),
                     "deploy": {
                         "replicas": 2,
@@ -311,7 +311,7 @@ document.getElementById('schemaForm').addEventListener('submit', function(event)
                         "N8N_RUNNERS_MODE=internal",
                         "OFFLOAD_MANUAL_EXECUTIONS_TO_WORKERS=true",
                         "N8N_NODE_PATH=/home/node/.n8n/nodes",
-                        "N8N_COMMUNITY_PACKAGES_ALLOW_TOOL_USAGE=true" // Adicionado aqui
+                        "N8N_COMMUNITY_PACKAGES_ALLOW_TOOL_USAGE=true"
                     ].join("\r\n"),
                     "deploy": {
                         "replicas": 1,
@@ -403,19 +403,29 @@ document.getElementById('schemaForm').addEventListener('submit', function(event)
 
     // Exibir o schema gerado na página
     const schemaOutput = document.getElementById('schemaOutput');
-    schemaOutput.textContent = schemaString;
+    if (schemaOutput) {
+        schemaOutput.textContent = schemaString;
+    } else {
+        console.error('Elemento schemaOutput não encontrado no DOM');
+    }
 
     // Mostrar o botão de copiar
     const copyButton = document.getElementById('copyButton');
-    copyButton.style.display = 'block';
+    if (copyButton) {
+        copyButton.style.display = 'block';
+    } else {
+        console.error('Elemento copyButton não encontrado no DOM');
+    }
 
     // Adicionar funcionalidade ao botão de copiar
-    copyButton.onclick = function() {
-        navigator.clipboard.writeText(schemaString).then(() => {
-            alert('Schema copiado para a área de transferência!');
-        }).catch(err => {
-            console.error('Erro ao copiar o schema:', err);
-            alert('Erro ao copiar o schema. Por favor, copie manualmente.');
-        });
-    };
+    if (copyButton) {
+        copyButton.onclick = function() {
+            navigator.clipboard.writeText(schemaString).then(() => {
+                alert('Schema copiado para a área de transferência!');
+            }).catch(err => {
+                console.error('Erro ao copiar o schema:', err);
+                alert('Erro ao copiar o schema. Por favor, copie manualmente.');
+            });
+        };
+    }
 });
