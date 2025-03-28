@@ -2,44 +2,35 @@ document.getElementById('schemaForm').addEventListener('submit', function(event)
     event.preventDefault();
 
     // Capturar os valores dos campos
-    const projectName = document.getElementById('projectName').value || 'helpmidias';
-    const defaultSubdomain = document.getElementById('defaultDomain').value || '2ecw2a.easypanel.host';
-    const apiEvolution = document.getElementById('apiEvolution').value || 'A3D1CF99FD393CFBD7AEE966BB78E';
-    const n8nEncryptionKey = document.getElementById('n8nEncryptionKey').value || '6A8E9166AC3C1C7996667465C8549';
-    const redisKey = document.getElementById('redisKey').value || '2647417615DF52CA273515CEB689F';
-    const postgresKey = document.getElementById('postgresKey').value || '6C465235796521F9F95353677B473';
-    const email = document.getElementById('email').value || 'seuemail@exemplo.com';
-
-    // Log para depuração
-    console.log('Project Name:', projectName);
-    console.log('Default Subdomain:', defaultSubdomain);
+    const projectName = document.getElementById('projectName').value || 'dinastia';
+    const defaultDomain = document.getElementById('defaultDomain').value || '1ntq3m.easypanel.host';
+    const apiKey = document.getElementById('apiKey').value || '78D259999CB81A4A5244482874A78';
+    const n8nEncryptionKey = document.getElementById('n8nEncryptionKey').value || '4F2294E8755DAD74DC1B8B6B2BA4A';
+    const redisKey = document.getElementById('redisKey').value || '955C6A517BAF8ED3F1EEFBFE5C647';
+    const postgresKey = document.getElementById('postgresKey').value || 'F49336A1562F6121CB193DC12BD17';
 
     // Construir os domínios completos usando o projectName e o subdomínio
-    const evolutionDomain = `${projectName}-evolution.${defaultSubdomain}`;
-    const n8nEditorDomain = `${projectName}-n8n-editor.${defaultSubdomain}`;
-    const n8nWebhookDomain = `${projectName}-n8n-webhook.${defaultSubdomain}`;
-    const n8nWorkerDomain = `${projectName}-n8n-worker.${defaultSubdomain}`;
-
-    // Log para depuração dos domínios
-    console.log('Evolution Domain:', evolutionDomain);
-    console.log('N8N Editor Domain:', n8nEditorDomain);
-    console.log('N8N Webhook Domain:', n8nWebhookDomain);
-    console.log('N8N Worker Domain:', n8nWorkerDomain);
+    const evolutionDomain = `${projectName}-evolution.${defaultDomain}`;
+    const grafanaDomain = `${projectName}-grafana.${defaultDomain}`;
+    const n8nEditorDomain = `${projectName}-n8n-editor.${defaultDomain}`;
+    const n8nWebhookDomain = `${projectName}-n8n-webhook.${defaultDomain}`;
+    const n8nWorkerDomain = `${projectName}-n8n-worker.${defaultDomain}`;
+    const mcpDomain = `${projectName}-mcp.${defaultDomain}`;
 
     // Construir o schema JSON
     const schema = {
-        services: [
+        "services": [
             {
-                type: "app",
-                data: {
-                    projectName: projectName,
-                    serviceName: "evolution",
-                    source: {
-                        type: "image",
-                        image: "atendai/evolution-api:latest"
+                "type": "app",
+                "data": {
+                    "projectName": projectName,
+                    "serviceName": "evolution",
+                    "source": {
+                        "type": "image",
+                        "image": "atendai/evolution-api:latest"
                     },
-                    env: [
-                        `SERVER_URL=https://$(PRIMARY_DOMAIN)`,
+                    "env": [
+                        "SERVER_URL=https://$(PRIMARY_DOMAIN)",
                         "DEL_INSTANCE=false",
                         "DEL_TEMP_INSTANCES=false",
                         "PROVIDER_ENABLED=false",
@@ -102,7 +93,7 @@ document.getElementById('schemaForm').addEventListener('submit', function(event)
                         "TYPEBOT_API_VERSION=latest",
                         "CHATWOOT_ENABLED=false",
                         "CHATWOOT_MESSAGE_READ=true",
-                        "CHATWOOT_IMPORT_DATABASE_CONNECTION_URI=postgresql://[USUARIO]:[SENHA]@[HOST]:5432/[CHATWOPOT_DATABASE]?sslmode=disable",
+                        `CHATWOOT_IMPORT_DATABASE_CONNECTION_URI=postgresql://postgres:${postgresKey}@${projectName}_postgres:5432/chatwoot?sslmode=disable`,
                         "CHATWOOT_IMPORT_PLACEHOLDER_MEDIA_MESSAGE=true",
                         "CACHE_REDIS_ENABLED=true",
                         `CACHE_REDIS_URI=redis://default:${redisKey}@${projectName}_redis:6379/5`,
@@ -116,64 +107,92 @@ document.getElementById('schemaForm').addEventListener('submit', function(event)
                         "S3_PORT=443",
                         "S3_ENDPOINT=",
                         "S3_USE_SSL=true",
-                        `AUTHENTICATION_API_KEY=${apiEvolution}`,
+                        `AUTHENTICATION_API_KEY=${apiKey}`,
                         "AUTHENTICATION_EXPOSE_IN_FETCH_INSTANCES=true",
                         "LANGUAGE=pt-BR"
                     ].join("\r\n"),
-                    deploy: {
-                        replicas: 1,
-                        command: null,
-                        zeroDowntime: true
+                    "deploy": {
+                        "replicas": 1,
+                        "command": null,
+                        "zeroDowntime": true
                     },
-                    domains: [
+                    "domains": [
                         {
-                            host: evolutionDomain,
-                            https: true,
-                            port: 8080,
-                            path: "/",
-                            wildcard: false,
-                            internalProtocol: "http"
+                            "host": evolutionDomain,
+                            "https": true,
+                            "port": 8080,
+                            "path": "/",
+                            "wildcard": false,
+                            "internalProtocol": "http"
                         }
                     ]
                 }
             },
             {
-                type: "app",
-                data: {
-                    projectName: projectName,
-                    serviceName: "n8n_editor",
-                    source: {
-                        type: "image",
-                        image: "n8nio/n8n:latest"
+                "type": "app",
+                "data": {
+                    "projectName": projectName,
+                    "serviceName": "grafana",
+                    "source": {
+                        "type": "image",
+                        "image": "grafana/grafana-oss:11.4.0"
                     },
-                    env: [
+                    "env": "GF_CHECK_FOR_UPDATES=false",
+                    "deploy": {
+                        "replicas": 1,
+                        "command": null,
+                        "zeroDowntime": true
+                    },
+                    "domains": [
+                        {
+                            "host": grafanaDomain,
+                            "https": true,
+                            "port": 3000,
+                            "path": "/",
+                            "wildcard": false,
+                            "internalProtocol": "http"
+                        }
+                    ],
+                    "mounts": [
+                        {
+                            "type": "volume",
+                            "name": "storage",
+                            "mountPath": "/var/lib/grafana"
+                        }
+                    ]
+                }
+            },
+            {
+                "type": "app",
+                "data": {
+                    "projectName": projectName,
+                    "serviceName": "n8n_editor",
+                    "source": {
+                        "type": "image",
+                        "image": "n8nio/n8n:1.84.3" // Versão específica do N8N
+                    },
+                    "env": [
                         "DB_TYPE=postgresdb",
                         "DB_POSTGRESDB_PORT=5432",
                         `DB_POSTGRESDB_HOST=${projectName}_postgres`,
                         "DB_POSTGRESDB_DATABASE=n8n",
                         "DB_POSTGRESDB_USER=postgres",
                         `DB_POSTGRESDB_PASSWORD=${postgresKey}`,
-                        "# criar chave https://acte.ltd/utils/randomkeygen",
                         `N8N_ENCRYPTION_KEY=${n8nEncryptionKey}`,
-                        "# hosts e URL",
+                        `N8N_MCP_SERVER_URL=https://${mcpDomain}`, // Integração com MCP Server
                         `N8N_HOST=https://${n8nEditorDomain}`,
                         `N8N_EDITOR_BASE_URL=https://${n8nEditorDomain}`,
                         "N8N_PROTOCOL=https",
                         "NODE_ENV=production",
-                        "# webhooks",
                         `WEBHOOK_URL=https://${n8nWebhookDomain}`,
-                        "# modo de execuçao para fila",
                         "EXECUTIONS_MODE=queue",
-                        "# redis",
                         `QUEUE_BULL_REDIS_HOST=${projectName}_redis`,
                         `QUEUE_BULL_REDIS_PASSWORD=${redisKey}`,
                         "QUEUE_BULL_REDIS_PORT=6379",
                         "QUEUE_BULL_REDIS_DB=2",
-                        "# bibliotecas utilizadas",
                         "NODE_FUNCTION_ALLOW_EXTERNAL=*",
-                        "EXECUTIONS_DATA_PRUNE='true'",
+                        "EXECUTIONS_DATA_PRUNE=true",
                         "EXECUTIONS_DATA_MAX_AGE=336",
-                        "#timezone",
                         "GENERIC_TIMEZONE=America/Sao_Paulo",
                         "N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS=true",
                         "N8N_RUNNERS_ENABLED=true",
@@ -181,60 +200,54 @@ document.getElementById('schemaForm').addEventListener('submit', function(event)
                         "OFFLOAD_MANUAL_EXECUTIONS_TO_WORKERS=true",
                         "N8N_NODE_PATH=/home/node/.n8n/nodes"
                     ].join("\r\n"),
-                    deploy: {
-                        replicas: 1,
-                        command: "n8n start",
-                        zeroDowntime: true
+                    "deploy": {
+                        "replicas": 1,
+                        "command": "n8n start",
+                        "zeroDowntime": true
                     },
-                    domains: [
+                    "domains": [
                         {
-                            host: n8nEditorDomain,
-                            https: true,
-                            port: 5678,
-                            path: "/",
-                            wildcard: false,
-                            internalProtocol: "http"
+                            "host": n8nEditorDomain,
+                            "https": true,
+                            "port": 5678,
+                            "path": "/",
+                            "wildcard": false,
+                            "internalProtocol": "http"
                         }
                     ]
                 }
             },
             {
-                type: "app",
-                data: {
-                    projectName: projectName,
-                    serviceName: "n8n_webhook",
-                    source: {
-                        type: "image",
-                        image: "n8nio/n8n:latest"
+                "type": "app",
+                "data": {
+                    "projectName": projectName,
+                    "serviceName": "n8n_webhook",
+                    "source": {
+                        "type": "image",
+                        "image": "n8nio/n8n:1.84.3" // Versão específica do N8N
                     },
-                    env: [
+                    "env": [
                         "DB_TYPE=postgresdb",
                         "DB_POSTGRESDB_PORT=5432",
                         `DB_POSTGRESDB_HOST=${projectName}_postgres`,
                         "DB_POSTGRESDB_DATABASE=n8n",
                         "DB_POSTGRESDB_USER=postgres",
                         `DB_POSTGRESDB_PASSWORD=${postgresKey}`,
-                        "# criar chave https://acte.ltd/utils/randomkeygen",
                         `N8N_ENCRYPTION_KEY=${n8nEncryptionKey}`,
-                        "# hosts e URL",
+                        `N8N_MCP_SERVER_URL=https://${mcpDomain}`, // Integração com MCP Server
                         `N8N_HOST=https://${n8nEditorDomain}`,
                         `N8N_EDITOR_BASE_URL=https://${n8nEditorDomain}`,
                         "N8N_PROTOCOL=https",
                         "NODE_ENV=production",
-                        "# webhooks",
                         `WEBHOOK_URL=https://${n8nWebhookDomain}`,
-                        "# modo de execuçao para fila",
                         "EXECUTIONS_MODE=queue",
-                        "# redis",
                         `QUEUE_BULL_REDIS_HOST=${projectName}_redis`,
                         `QUEUE_BULL_REDIS_PASSWORD=${redisKey}`,
                         "QUEUE_BULL_REDIS_PORT=6379",
                         "QUEUE_BULL_REDIS_DB=2",
-                        "# bibliotecas utilizadas",
                         "NODE_FUNCTION_ALLOW_EXTERNAL=*",
-                        "EXECUTIONS_DATA_PRUNE='true'",
+                        "EXECUTIONS_DATA_PRUNE=true",
                         "EXECUTIONS_DATA_MAX_AGE=336",
-                        "#timezone",
                         "GENERIC_TIMEZONE=America/Sao_Paulo",
                         "N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS=true",
                         "N8N_RUNNERS_ENABLED=true",
@@ -242,60 +255,54 @@ document.getElementById('schemaForm').addEventListener('submit', function(event)
                         "OFFLOAD_MANUAL_EXECUTIONS_TO_WORKERS=true",
                         "N8N_NODE_PATH=/home/node/.n8n/nodes"
                     ].join("\r\n"),
-                    deploy: {
-                        replicas: 2,
-                        command: "n8n webhook",
-                        zeroDowntime: true
+                    "deploy": {
+                        "replicas": 2,
+                        "command": "n8n webhook",
+                        "zeroDowntime": true
                     },
-                    domains: [
+                    "domains": [
                         {
-                            host: n8nWebhookDomain,
-                            https: true,
-                            port: 5678,
-                            path: "/",
-                            wildcard: false,
-                            internalProtocol: "http"
+                            "host": n8nWebhookDomain,
+                            "https": true,
+                            "port": 5678,
+                            "path": "/",
+                            "wildcard": false,
+                            "internalProtocol": "http"
                         }
                     ]
                 }
             },
             {
-                type: "app",
-                data: {
-                    projectName: projectName,
-                    serviceName: "n8n_worker",
-                    source: {
-                        type: "image",
-                        image: "n8nio/n8n:latest"
+                "type": "app",
+                "data": {
+                    "projectName": projectName,
+                    "serviceName": "n8n_worker",
+                    "source": {
+                        "type": "image",
+                        "image": "n8nio/n8n:1.84.3" // Versão específica do N8N
                     },
-                    env: [
+                    "env": [
                         "DB_TYPE=postgresdb",
                         "DB_POSTGRESDB_PORT=5432",
                         `DB_POSTGRESDB_HOST=${projectName}_postgres`,
                         "DB_POSTGRESDB_DATABASE=n8n",
                         "DB_POSTGRESDB_USER=postgres",
                         `DB_POSTGRESDB_PASSWORD=${postgresKey}`,
-                        "# criar chave https://acte.ltd/utils/randomkeygen",
                         `N8N_ENCRYPTION_KEY=${n8nEncryptionKey}`,
-                        "# hosts e URL",
+                        `N8N_MCP_SERVER_URL=https://${mcpDomain}`, // Integração com MCP Server
                         `N8N_HOST=https://${n8nEditorDomain}`,
                         `N8N_EDITOR_BASE_URL=https://${n8nEditorDomain}`,
                         "N8N_PROTOCOL=https",
                         "NODE_ENV=production",
-                        "# webhooks",
                         `WEBHOOK_URL=https://${n8nWebhookDomain}`,
-                        "# modo de execuçao para fila",
                         "EXECUTIONS_MODE=queue",
-                        "# redis",
                         `QUEUE_BULL_REDIS_HOST=${projectName}_redis`,
                         `QUEUE_BULL_REDIS_PASSWORD=${redisKey}`,
                         "QUEUE_BULL_REDIS_PORT=6379",
                         "QUEUE_BULL_REDIS_DB=2",
-                        "# bibliotecas utilizadas",
                         "NODE_FUNCTION_ALLOW_EXTERNAL=*",
-                        "EXECUTIONS_DATA_PRUNE='true'",
+                        "EXECUTIONS_DATA_PRUNE=true",
                         "EXECUTIONS_DATA_MAX_AGE=336",
-                        "#timezone",
                         "GENERIC_TIMEZONE=America/Sao_Paulo",
                         "N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS=true",
                         "N8N_RUNNERS_ENABLED=true",
@@ -303,39 +310,85 @@ document.getElementById('schemaForm').addEventListener('submit', function(event)
                         "OFFLOAD_MANUAL_EXECUTIONS_TO_WORKERS=true",
                         "N8N_NODE_PATH=/home/node/.n8n/nodes"
                     ].join("\r\n"),
-                    deploy: {
-                        replicas: 1,
-                        command: "n8n worker --concurrency=10",
-                        zeroDowntime: true
+                    "deploy": {
+                        "replicas": 1,
+                        "command": "n8n worker --concurrency=10",
+                        "zeroDowntime": true
                     },
-                    domains: [
+                    "domains": [
                         {
-                            host: n8nWorkerDomain,
-                            https: true,
-                            port: 80,
-                            path: "/",
-                            wildcard: false,
-                            internalProtocol: "http"
+                            "host": n8nWorkerDomain,
+                            "https": true,
+                            "port": 80,
+                            "path": "/",
+                            "wildcard": false,
+                            "internalProtocol": "http"
                         }
                     ]
                 }
             },
             {
-                type: "postgres",
-                data: {
-                    projectName: projectName,
-                    serviceName: "postgres",
-                    image: "pgvector/pgvector:pg17",
-                    password: postgresKey
+                "type": "postgres",
+                "data": {
+                    "projectName": projectName,
+                    "serviceName": "pgvector",
+                    "image": "ankane/pgvector:v0.5.1",
+                    "password": "afa9090d0253279a55ae"
                 }
             },
             {
-                type: "redis",
-                data: {
-                    projectName: projectName,
-                    serviceName: "redis",
-                    image: "redis:7",
-                    password: redisKey
+                "type": "postgres",
+                "data": {
+                    "projectName": projectName,
+                    "serviceName": "postgres",
+                    "image": "pgvector/pgvector:pg17",
+                    "password": postgresKey
+                }
+            },
+            {
+                "type": "redis",
+                "data": {
+                    "projectName": projectName,
+                    "serviceName": "redis",
+                    "image": "redis:7",
+                    "password": redisKey
+                }
+            },
+            {
+                "type": "app",
+                "data": {
+                    "projectName": projectName,
+                    "serviceName": "mcp_server",
+                    "source": {
+                        "type": "image",
+                        "image": "node:18"
+                    },
+                    "env": [
+                        "PORT=3001",
+                        "MCP_HOST=0.0.0.0",
+                        `CACHE_REDIS_URI=redis://default:${redisKey}@${projectName}_redis:6379/2`, // Alinhado com N8N
+                        `DB_TYPE=postgresdb`, // Adicionado para compatibilidade
+                        `DB_POSTGRESDB_HOST=${projectName}_postgres`,
+                        `DB_POSTGRESDB_DATABASE=n8n`,
+                        `DB_POSTGRESDB_USER=postgres`,
+                        `DB_POSTGRESDB_PASSWORD=${postgresKey}`,
+                        `N8N_ENCRYPTION_KEY=${n8nEncryptionKey}` // Alinhado com N8N
+                    ].join("\r\n"),
+                    "deploy": {
+                        "replicas": 1,
+                        "command": "npm install n8n-mcp-server -g && n8n-mcp-server",
+                        "zeroDowntime": true
+                    },
+                    "domains": [
+                        {
+                            "host": mcpDomain,
+                            "https": true,
+                            "port": 3001,
+                            "path": "/",
+                            "wildcard": false,
+                            "internalProtocol": "http"
+                        }
+                    ]
                 }
             }
         ]
