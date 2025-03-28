@@ -169,7 +169,7 @@ document.getElementById('schemaForm').addEventListener('submit', function(event)
                     "serviceName": "n8n_editor",
                     "source": {
                         "type": "image",
-                        "image": "n8nio/n8n:1.84.3" // Versão específica do N8N
+                        "image": "n8nio/n8n:1.84.3"
                     },
                     "env": [
                         "DB_TYPE=postgresdb",
@@ -179,7 +179,7 @@ document.getElementById('schemaForm').addEventListener('submit', function(event)
                         "DB_POSTGRESDB_USER=postgres",
                         `DB_POSTGRESDB_PASSWORD=${postgresKey}`,
                         `N8N_ENCRYPTION_KEY=${n8nEncryptionKey}`,
-                        `N8N_MCP_SERVER_URL=https://${mcpDomain}`, // Integração com MCP Server
+                        `N8N_MCP_SERVER_URL=https://${mcpDomain}`,
                         `N8N_HOST=https://${n8nEditorDomain}`,
                         `N8N_EDITOR_BASE_URL=https://${n8nEditorDomain}`,
                         "N8N_PROTOCOL=https",
@@ -198,11 +198,12 @@ document.getElementById('schemaForm').addEventListener('submit', function(event)
                         "N8N_RUNNERS_ENABLED=true",
                         "N8N_RUNNERS_MODE=internal",
                         "OFFLOAD_MANUAL_EXECUTIONS_TO_WORKERS=true",
-                        "N8N_NODE_PATH=/home/node/.n8n/nodes"
+                        "N8N_NODE_PATH=/home/node/.n8n/nodes",
+                        "N8N_COMMUNITY_PACKAGES_ALLOW_TOOL_USAGE=true" // Adicionado aqui
                     ].join("\r\n"),
                     "deploy": {
                         "replicas": 1,
-                        "command": "n8n start",
+                        "command": "sh -c 'npm install n8n-nodes-evolution-api n8n-nodes-global @couleetech/n8n-nodes-mcp-client && n8n start'",
                         "zeroDowntime": true
                     },
                     "domains": [
@@ -224,7 +225,7 @@ document.getElementById('schemaForm').addEventListener('submit', function(event)
                     "serviceName": "n8n_webhook",
                     "source": {
                         "type": "image",
-                        "image": "n8nio/n8n:1.84.3" // Versão específica do N8N
+                        "image": "n8nio/n8n:1.84.3"
                     },
                     "env": [
                         "DB_TYPE=postgresdb",
@@ -234,7 +235,7 @@ document.getElementById('schemaForm').addEventListener('submit', function(event)
                         "DB_POSTGRESDB_USER=postgres",
                         `DB_POSTGRESDB_PASSWORD=${postgresKey}`,
                         `N8N_ENCRYPTION_KEY=${n8nEncryptionKey}`,
-                        `N8N_MCP_SERVER_URL=https://${mcpDomain}`, // Integração com MCP Server
+                        `N8N_MCP_SERVER_URL=https://${mcpDomain}`,
                         `N8N_HOST=https://${n8nEditorDomain}`,
                         `N8N_EDITOR_BASE_URL=https://${n8nEditorDomain}`,
                         "N8N_PROTOCOL=https",
@@ -253,11 +254,12 @@ document.getElementById('schemaForm').addEventListener('submit', function(event)
                         "N8N_RUNNERS_ENABLED=true",
                         "N8N_RUNNERS_MODE=internal",
                         "OFFLOAD_MANUAL_EXECUTIONS_TO_WORKERS=true",
-                        "N8N_NODE_PATH=/home/node/.n8n/nodes"
+                        "N8N_NODE_PATH=/home/node/.n8n/nodes",
+                        "N8N_COMMUNITY_PACKAGES_ALLOW_TOOL_USAGE=true" // Adicionado aqui
                     ].join("\r\n"),
                     "deploy": {
                         "replicas": 2,
-                        "command": "n8n webhook",
+                        "command": "sh -c 'npm install n8n-nodes-evolution-api n8n-nodes-global @couleetech/n8n-nodes-mcp-client && n8n webhook'",
                         "zeroDowntime": true
                     },
                     "domains": [
@@ -279,7 +281,7 @@ document.getElementById('schemaForm').addEventListener('submit', function(event)
                     "serviceName": "n8n_worker",
                     "source": {
                         "type": "image",
-                        "image": "n8nio/n8n:1.84.3" // Versão específica do N8N
+                        "image": "n8nio/n8n:1.84.3"
                     },
                     "env": [
                         "DB_TYPE=postgresdb",
@@ -289,7 +291,7 @@ document.getElementById('schemaForm').addEventListener('submit', function(event)
                         "DB_POSTGRESDB_USER=postgres",
                         `DB_POSTGRESDB_PASSWORD=${postgresKey}`,
                         `N8N_ENCRYPTION_KEY=${n8nEncryptionKey}`,
-                        `N8N_MCP_SERVER_URL=https://${mcpDomain}`, // Integração com MCP Server
+                        `N8N_MCP_SERVER_URL=https://${mcpDomain}`,
                         `N8N_HOST=https://${n8nEditorDomain}`,
                         `N8N_EDITOR_BASE_URL=https://${n8nEditorDomain}`,
                         "N8N_PROTOCOL=https",
@@ -308,11 +310,12 @@ document.getElementById('schemaForm').addEventListener('submit', function(event)
                         "N8N_RUNNERS_ENABLED=true",
                         "N8N_RUNNERS_MODE=internal",
                         "OFFLOAD_MANUAL_EXECUTIONS_TO_WORKERS=true",
-                        "N8N_NODE_PATH=/home/node/.n8n/nodes"
+                        "N8N_NODE_PATH=/home/node/.n8n/nodes",
+                        "N8N_COMMUNITY_PACKAGES_ALLOW_TOOL_USAGE=true" // Adicionado aqui
                     ].join("\r\n"),
                     "deploy": {
                         "replicas": 1,
-                        "command": "n8n worker --concurrency=10",
+                        "command": "sh -c 'npm install n8n-nodes-evolution-api n8n-nodes-global @couleetech/n8n-nodes-mcp-client && n8n worker --concurrency=10'",
                         "zeroDowntime": true
                     },
                     "domains": [
@@ -366,13 +369,14 @@ document.getElementById('schemaForm').addEventListener('submit', function(event)
                     "env": [
                         "PORT=3001",
                         "MCP_HOST=0.0.0.0",
-                        `CACHE_REDIS_URI=redis://default:${redisKey}@${projectName}_redis:6379/2`, // Alinhado com N8N
-                        `DB_TYPE=postgresdb`, // Adicionado para compatibilidade
+                        `CACHE_REDIS_URI=redis://default:${redisKey}@${projectName}_redis:6379/2`,
+                        `DB_TYPE=postgresdb`,
                         `DB_POSTGRESDB_HOST=${projectName}_postgres`,
                         `DB_POSTGRESDB_DATABASE=n8n`,
                         `DB_POSTGRESDB_USER=postgres`,
                         `DB_POSTGRESDB_PASSWORD=${postgresKey}`,
-                        `N8N_ENCRYPTION_KEY=${n8nEncryptionKey}` // Alinhado com N8N
+                        `N8N_ENCRYPTION_KEY=${n8nEncryptionKey}`,
+                        `N8N_API_URL=https://${n8nEditorDomain}`
                     ].join("\r\n"),
                     "deploy": {
                         "replicas": 1,
