@@ -45,12 +45,45 @@ Criar um ecossistema digital onde pequenos negócios tenham **acesso a ferrament
 ## 📬 Fale com a gente
 Para parcerias, contribuições ou dúvidas, entre em contato via:
 
-- [LinkedIn](https://www.linkedin.com/in/oandresantoss)
-- [Instagram](https://www.instagram.com/oandresantoss)
-- [YouTube](https://www.youtube.com/c/ModelodeConvers%C3%A3o)
-- Email: andremissional@gmail.com
+HELP MÍDIAS IA 🤖
 
----
+
+SITE: https://helpmidiasdigital.com.br/
+
+GITHUB: https://github.com/helpmidias-ia
+
+COMUNIDADE A CÚPULA: https://discord.gg/bwKqTUzAvw
+
+INSTAGRAM: https://www.instagram.com/helpmidias.ia/
+
+LINKEDIN: https://www.linkedin.com/showcase/helpmidias-ia/
+
+WHATSAPP: https://api.whatsapp.com/send?phone=5521997878324
+
+E-MAIL: contato@helpmidiasdigital.com.br
+
+
+HELP META 💼
+
+
+SITE: https://helpmeta.com.br/
+
+BLOG: https://blog.helpmeta.com.br/ 
+
+LINKEDIN: https://www.linkedin.com/company/helpmeta/
+
+INSTAGRAM: https://www.instagram.com/_helpmeta/
+
+NEWSLETTER: https://www.linkedin.com/newsletters/help-meta-7028499197867745280/
+
+E-MAIL: contato@helpmeta.com.br
+
+
+MDC TV - ATIVE O MODO MICHAEL JORDAN 🚀
+
+
+YOUTUBE: https://www.youtube.com/@modelodeconversao 
+
 
 **🚧 Projeto em desenvolvimento – contribua ou acompanhe nossas próximas versões!**
 
