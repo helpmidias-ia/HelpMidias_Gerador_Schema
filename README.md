@@ -1,5 +1,15 @@
 # HelpMídias 🚀 | Do Gratuito ao MicroSaaS Inteligente
 
+## Verificação local do gerador legado
+
+O formulário em `index.html`/`script.js` gera JSON localmente; não provisiona serviços nem testa conexões. Requer nome do projeto, domínio, chave da API Evolution, chave de criptografia n8n e senhas PostgreSQL/Redis. O e-mail não é usado no schema e continua opcional. Campos vazios, somente espaços, quebras de linha e caracteres nulos são recusados. Editar o formulário limpa o resultado anterior.
+
+As senhas são codificadas com `encodeURIComponent` somente dentro das URIs. Os campos `password`, `DB_POSTGRESDB_PASSWORD` e `QUEUE_BULL_REDIS_PASSWORD` preservam o valor original. A saída contém os valores informados e deve ser tratada como configuração sensível; erros de clipboard não registram o conteúdo no console.
+
+Testes sintéticos, sem rede, banco ou instalação de dependências: `node --test test_schema.cjs` (Node.js 22+). Na base `cc077280`, `/` na senha produzia URI inválida e campos vazios ainda geravam JSON. A regressão verifica round-trip de senhas, separação entre URI e valores brutos, validação, limpeza de saída e clipboard. São 36 testes aprovados após a correção. Não há workflow de CI versionado neste repositório.
+
+Esta correção do formulário preserva o schema legado de sete serviços. Não homologa suas imagens, versões, variáveis ou compatibilidade com os serviços atuais e não executa implantação.
+
 **HelpMídias** é uma iniciativa que nasce com uma missão clara: entregar valor real para pequenos e grandes negócios e criadores através de soluções práticas e acessíveis.
 
 ## 🌱 Fase 1 – Produto Gratuito: Chema IA

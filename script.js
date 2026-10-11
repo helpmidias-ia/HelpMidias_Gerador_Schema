@@ -1,6 +1,30 @@
+// Invalidar o resultado quando o formulário mudar ou não puder ser enviado.
+const schemaForm = document.getElementById('schemaForm');
+function clearSchema() {
+    document.getElementById('schemaOutput').textContent = '';
+    document.getElementById('copyButton').style.display = 'none';
+}
+schemaForm.addEventListener('input', function(event) {
+    event.target.setCustomValidity('');
+    clearSchema();
+});
+schemaForm.addEventListener('invalid', clearSchema, true);
+
 // Evento de envio do formulário
 document.getElementById('schemaForm').addEventListener('submit', function(event) {
     event.preventDefault(); // Impede o comportamento padrão do formulário
+
+    clearSchema();
+    // Email não é usado no schema; somente os seis campos abaixo são obrigatórios.
+    for (const id of ['projectName', 'defaultDomain', 'apiEvolution', 'n8nEncryptionKey', 'redisKey', 'postgresKey']) {
+        const field = document.getElementById(id);
+        const invalid = !field.value.trim() || /[\r\n\0]/.test(field.value);
+        field.setCustomValidity(invalid ? 'Preencha este campo sem quebras de linha ou caracteres nulos.' : '');
+        if (invalid) {
+            field.reportValidity();
+            return;
+        }
+    }
 
     // Pegar os valores do formulário
     const projectName = document.getElementById('projectName').value;
@@ -32,7 +56,7 @@ document.getElementById('schemaForm').addEventListener('submit', function(event)
                         `PROVIDER_PREFIX=evolution-app\r\n` +
                         `DATABASE_ENABLED=true\r\n` +
                         `DATABASE_PROVIDER=postgresql\r\n` +
-                        `DATABASE_CONNECTION_URI=postgres://postgres:${postgresKey}@${projectName}_postgres:5432/evolution-app\r\n` +
+                        `DATABASE_CONNECTION_URI=postgres://postgres:${encodeURIComponent(postgresKey)}@${projectName}_postgres:5432/evolution-app\r\n` +
                         `DATABASE_CONNECTION_CLIENT_NAME=evolution-app\r\n` +
                         `CONFIG_SESSION_PHONE_VERSION=2.3000.1020992134\r\n` +
                         `SQS_ENABLED=false\r\n` +
@@ -89,7 +113,7 @@ document.getElementById('schemaForm').addEventListener('submit', function(event)
                         `CHATWOOT_IMPORT_DATABASE_CONNECTION_URI=postgresql://[USUARIO]:[SENHA]@[HOST]:5432/[CHATWOPOT_DATABASE]?sslmode=disable\r\n` +
                         `CHATWOOT_IMPORT_PLACEHOLDER_MEDIA_MESSAGE=true\r\n` +
                         `CACHE_REDIS_ENABLED=true\r\n` +
-                        `CACHE_REDIS_URI=redis://default:${redisKey}@${projectName}_redis:6379/5\r\n` +
+                        `CACHE_REDIS_URI=redis://default:${encodeURIComponent(redisKey)}@${projectName}_redis:6379/5\r\n` +
                         `CACHE_REDIS_PREFIX_KEY=evolution-app\r\n` +
                         `CACHE_REDIS_SAVE_INSTANCES=false\r\n` +
                         `CACHE_LOCAL_ENABLED=false\r\n` +
@@ -328,7 +352,6 @@ document.getElementById('copyButton').addEventListener('click', async function()
         await navigator.clipboard.writeText(schemaOutput);
         alert('Schema copiado para a área de transferência!');
     } catch (err) {
-        console.error('Falha ao copiar: ', err);
-        alert('Erro ao copiar o schema. Verifique o console para mais detalhes.');
+        alert('Não foi possível copiar o schema. Tente novamente.');
     }
 });
